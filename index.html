@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self'; 
+    img-src 'self' data: https://i.ytimg.com https://encrypted-tbn0.gstatic.com/; 
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com;
+    style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    connect-src 'self' https://send-whats-kaval123.turso.io;
+    font-src 'self' https://cdn.jsdelivr.net;
+    frame-src 'self' data:;
+  ">
+    <title>Grupos de WhatsApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/shim.min.js"
+        integrity="sha512-nPnkC29R0sikt0ieZaAkk28Ib7Y1Dz7IqePgELH30NnSi1DzG4x+envJAOHz8ZSAveLXAHTR3ai2E9DZUsT8pQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #logoutBtn,
+        #verQr {
+            display: block;
+            /* o cualquier otra regla que cambie el comportamiento por defecto */
+        }
+
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header-title {
+            color: #25d366;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .qr-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .qr-title {
+            color: #6c757d;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .qr-image {
+            max-width: 200px;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: #495057;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f3f4;
+            background: transparent;
+        }
+
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 2rem;
+        }
+
+        .whatsapp-icon {
+            color: #25d366;
+        }
+
+        .participants-icon {
+            color: #17a2b8;
+        }
+
+        /* Animación de pulso para el QR */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Transiciones suaves */
+        .list-group-item {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .list-group-item:hover {
+            transform: translateX(2px);
+        }
+
+        /* Estilo para elementos activos */
+        .list-group-item.active {
+            background-color: #25d366 !important;
+            border-color: #25d366 !important;
+        }
+
+        .list-group-item.active * {
+            color: white !important;
+        }
+
+        /* Toast personalizado */
+        .toast {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Mejoras responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem 0.5rem;
+            }
+
+            .section-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+
+        <div class="container my-4">
+            <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded shadow-sm">
+                <h1 class="h4 mb-0 text-success">
+                    <i class="bi bi-whatsapp me-2 whatsapp-icon"></i>
+                    Grupos de WhatsApp
+                </h1>
+                <button id="logoutBtn" class="btn btn-outline-danger d-flex align-items-center">
+                    <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+                </button>
+                <button id="verQr" class=" btn btn-outline-primary d-flex align-items-center">
+                    <i class="bi bi-qr-code me-2"></i>
+                    Ver Qr
+                </button>
+            </div>
+        </div>
+
+        <dialog id="qrModal" class="z-10 " style="border: none; background-color: transparent;">
+            <div id="qrContainer" class="qr-container">
+                <i class="bi bi-qr-code me-2"></i>
+                <h2 class="qr-title">
+                    Escanea el código QR
+                </h2>
+                <img id="qrImage" src="/placeholder.svg" alt="QR de WhatsApp" class="qr-image">
+                <form action="" method="dialog">
+                    <button type="submit" class="fw-bold my-2 btn btn-outline-danger">Cerrar</button>
+                </form>
+            </div>
+        </dialog>
+
+        <div class="section-card">
+            <h2 class="section-title">
+                <i class="bi bi-people-fill whatsapp-icon"></i>
+                Grupos
+            </h2>
+            <ul id="groupList" class="list-group list-group-flush">
+                <li class="empty-state">No hay grupos disponibles</li>
+            </ul>
+        </div>
+
+        <div class="modal fade" id="participantsModal" tabindex="-1" aria-labelledby="participantsModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="participantsModalLabel">
+                            <i class="bi bi-person-lines-fill me-2"></i> Participantes
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="modalParticipantList" class="list-group list-group-flush">
+                            <li class="list-group-item">Cargando participantes...</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="downloadExcelBtn" class="btn btn-success">
+                            <i class="bi bi-download me-1"></i> Descargar Excel
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="renderer.js"></script>
+    <script>
+        document.getElementById("verQr").addEventListener('click', () => {
+            document.getElementById('qrModal').showModal();
+        })
+        document.getElementById('logoutBtn').addEventListener("click", async () => {
+            if (confirm("¿Estás seguro que deseas cerrar sesión de WhatsApp?")) {
+                await window.whatsappAPI.logout();
+                location.reload();
+            }
+        });
+    </script>
+</body>
+
+</html>
