@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "pack": "electron-builder",
-    "build": "electron-packager . SendWhats --platform=win32 --arch=x64 --out=dist/ --overwrite"
+    "build-win": "electron-packager . SendWhats --platform=win32 --arch=x64 --out=dist/ --overwrite",
+    "build-linux": "electron-packager . SendWhats --platform=linux --arch=x64 --out=dist/ --overwrite"
   },
   "keywords": [],
   "author": "",
