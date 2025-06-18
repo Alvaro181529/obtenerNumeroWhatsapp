@@ -1,13 +1,13 @@
 {
-  "name": "numgroup",
+  "name": "whatgrup",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "pack": "electron-builder",
-    "build-win": "electron-packager . SendWhats --platform=win32 --arch=x64 --out=dist/ --overwrite",
-    "build-linux": "electron-packager . SendWhats --platform=linux --arch=x64 --out=dist/ --overwrite"
+    "build-win": "electron-packager . whatGrup --platform=win32 --arch=x64 --out=dist/ --overwrite",
+    "build-linux": "electron-packager . whatGrup --platform=linux --arch=x64 --out=dist/ --overwrite"
   },
   "keywords": [],
   "author": "",
